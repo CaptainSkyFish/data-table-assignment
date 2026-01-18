@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { OverlayPanel } from 'primereact/overlaypanel';
-import type { Artworks } from "../types/artworks";
+import type Artworks from "../types/artworks";
 import { Button } from "primereact/button";
 import { InputNumber } from "primereact/inputnumber";
 
@@ -15,11 +15,15 @@ export const SelectionOverlay = ({ artworks, onSelect, onClearAll }: SelectionOv
   const overlayRef = useRef<OverlayPanel>(null);
 
   return <div className="flex items-center justify-center">
-    <button onClick={(e) => overlayRef.current?.toggle(e)}>
-      <i className="pi pi-chevron-down pointer-cursor"> </i>
-    </button>
+    <Button
+      text
+      size="small"
+      severity="secondary"
+      icon="pi pi-chevron-down"
+      onClick={(e) => overlayRef.current?.toggle(e)} />
+
     <OverlayPanel ref={overlayRef}>
-      <div style={{ padding: '1rem', minWidth: '250px' }}>
+      <div className="p-1 min-w-2xs ">
         <h2 className="font-semibold">Select Rows</h2>
         <div className="mb-1">
           <label htmlFor="rowsInput" style={{ display: 'block', marginBottom: '0.5rem' }}>
@@ -35,20 +39,21 @@ export const SelectionOverlay = ({ artworks, onSelect, onClearAll }: SelectionOv
             style={{ width: '100%' }}
           />
         </div>
-        <div className="flex gap-2 justify-end">
+        <div className="flex mt-5 gap-2 justify-end">
           <Button
             label="Clear All"
+            text
             icon="pi pi-times"
-            onClick={() => onClearAll()}
-            severity="secondary"
+            onClick={(e) => { onClearAll(); overlayRef.current?.toggle(e) }}
+            severity="danger"
           />
           <Button
             label="Select"
             icon="pi pi-check"
-            onClick={() => onSelect(rowsToSelect)}
+            onClick={(e) => { onSelect(rowsToSelect); overlayRef.current?.toggle(e) }}
           />
         </div>
       </div>
     </OverlayPanel>
-  </div>
+  </div >
 }

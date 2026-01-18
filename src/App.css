@@ -4,3 +4,21 @@
   text-overflow: ellipsis;
   max-width: 0;
 }
+
+/* hack to render the overlay toggle button on right side of the checkbox */
+/* this avoids throwing away all the functionalities that come pre-built with the PrimeReact DataTable  */
+.p-selection-column .p-column-header-content {
+  display: flex;
+  align-items: center;
+  gap: .25rem;
+}
+
+/* checkbox  */
+.p-selection-column .p-column-header-content>.p-checkbox {
+  order: 1;
+}
+
+/* dropdown button */
+.p-selection-column .p-column-header-content>.p-column-title {
+  order: 2;
+}

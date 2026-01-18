@@ -1,4 +1,4 @@
-export interface Artworks {
+export default interface Artworks {
   id: number;
   title: string;
   place_of_origin: string;
@@ -8,8 +8,3 @@ export interface Artworks {
   date_end: number;
 }
 
-
-export interface ColumnMeta {
-  field: string;
-  header: string;
-}
