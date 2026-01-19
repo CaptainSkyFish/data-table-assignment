@@ -1,70 +1,108 @@
-import { DataTable, type DataTableSelectionMultipleChangeEvent } from 'primereact/datatable';
+import { useState, useEffect, useRef } from 'react';
+import { DataTable } from 'primereact/datatable';
+import type { DataTableSelectionMultipleChangeEvent, DataTableSelectAllChangeEvent } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { SelectionOverlay } from './SelectionOverlay';
 import type Artworks from '../types/artworks';
-import type { ID } from '../hooks/useCollection';
-import { useEffect, useMemo, useState } from 'react';
-
 
 interface CollectionTableProps {
   items: Artworks[];
   loading: boolean;
-  isRowSelected: (id: ID, position?: number) => boolean;
-  setSelectFirstN: number;
-  // toggleRow: (id: ID, checked: boolean) => void;
-  // selectRows: (count: number) => void;
-  // clearSelection: () => void;
+  onSelectionChange: (selection: Artworks[], first: number) => void;
+  onSelectAllChange: (isAllSelected: boolean, currentPageItems: Artworks[]) => void;
+  selectRows: (count: number) => void;
+  clearSelection: () => void;
+  selectedCount?: number;
+  bulkSelectCount?: number;
+  currentPageSelection: Artworks[];
+  isInBulkMode: boolean;
+  first: number;
+  isAllCurrentPageSelected: boolean;
 }
 
 export const CollectionTable = ({
   items,
   loading,
-  isRowSelected,
-  setSelectFirstN
-  // selectRows,
-  // clearSelection
+  onSelectionChange,
+  onSelectAllChange,
+  selectRows,
+  clearSelection,
+  selectedCount,
+  bulkSelectCount,
+  currentPageSelection,
+  isInBulkMode,
+  first,
+  isAllCurrentPageSelected,
 }: CollectionTableProps) => {
-  const selectedRows = useMemo(
-    () => items.filter((row, i) => isRowSelected(row.id, i)),
-    [items, isRowSelected]
-  );  
-  const setSelectedRows = (rows: Artworks[]) => {
-    // user manually selected rows on current page
-    const next = new Set<ID>();
-    rows.forEach(r => next.add(r.id));
-  
-    setMode('manual');        // or 'page'
-    setSelectFirstN(0);
-    setDeselectedIds(new Set());
-    setSelectedIds(next);
+  const [localSelection, setLocalSelection] = useState<Artworks[]>([]);
+  const prevItemsRef = useRef<Artworks[]>([]);
+  const prevBulkSelectCountRef = useRef(0);
+  const isInitializedRef = useRef(false);
+
+  useEffect(() => {
+    if (!isInitializedRef.current) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setLocalSelection(currentPageSelection);
+      prevItemsRef.current = items;
+      prevBulkSelectCountRef.current = bulkSelectCount || 0;
+      isInitializedRef.current = true;
+      return;
+    }
+
+    const itemsChanged = items.length !== prevItemsRef.current.length ||
+      items.some((item, idx) => prevItemsRef.current[idx]?.id !== item.id);
+    
+    const bulkCountChanged = bulkSelectCount !== prevBulkSelectCountRef.current;
+    
+    if (itemsChanged || bulkCountChanged) {
+      setLocalSelection(currentPageSelection);
+      prevItemsRef.current = items;
+      prevBulkSelectCountRef.current = bulkSelectCount || 0;
+    }
+  }, [items, bulkSelectCount, currentPageSelection]);
+
+  const handleSelectionChange = (e: DataTableSelectionMultipleChangeEvent<Artworks[]>) => {
+    setLocalSelection(e.value || []);
+    onSelectionChange(e.value || [], first);
   };
 
+  const handleSelectAllChange = (e: DataTableSelectAllChangeEvent) => {
+    if (e.checked) {
+      onSelectAllChange(true, items);
+    } else {
+      onSelectAllChange(false, items);
+    }
+  };
 
-  return (
-    <DataTable<Artworks[]>
+  return <DataTable
     value={items}
-    selection={selectedRows}
-    onSelectionChange={(e: DataTableSelectionMultipleChangeEvent<Artworks[]>) => setSelectedItems(e.value)}
-    selectionMode={'checkbox'}
     dataKey="id"
     loading={loading}
+    selection={localSelection}
+    onSelectionChange={handleSelectionChange}
+    selectAll={isAllCurrentPageSelected}
+    onSelectAllChange={handleSelectAllChange}
     tableStyle={{ minWidth: '50rem' }}
+    selectionMode="multiple"
   >
+
     <Column
       selectionMode="multiple"
-      // header={
-        // <SelectionOverlay
-          // selectRows={selectRows}
-          // clearSelection={clearSelection}
-        // />}
-        headerStyle={{ width: '5%' }} />
-      <Column field="title" header="TITLE"style={{ width: '25%' }}  />
-      <Column field="place_of_origin" header="PLACE OF ORIGIN"style={{ width: '10%' }}  />
-      <Column field="artist_display" header="ARTIST"style={{ width: '25%' }}  />
-      <Column field="inscriptions" header="INSCRIPTIONS" />
-      <Column field="date_start" header="START DATE"style={{ width: '5%' }}  />
-      <Column field="date_end" header="END DATE"style={{ width: '5%' }}  />
-    </DataTable >
-  );
-};
+      header={
+        <SelectionOverlay
+          selectRows={selectRows}
+          clearSelection={clearSelection}
+          selectedCount={selectedCount}
+          isInBulkMode={isInBulkMode}
+        />}
+      headerStyle={{ width: '5%' }} />
+    
+    <Column field="title" header="TITLE" className='title-cell' style={{ width: '25%' }} />
+    <Column field="place_of_origin" header="PLACE OF ORIGIN" style={{ width: '10%' }} />
+    <Column field="artist_display" header="ARTIST" style={{ width: '25%' }} />
+    <Column field="inscriptions" header="INSCRIPTIONS" style={{ width: '25%' }} />
+    <Column field="date_start" header="START DATE" style={{ width: '5%' }} />
+    <Column field="date_end" header="END DATE" style={{ width: '5%' }} />
+  </DataTable>
 
+};

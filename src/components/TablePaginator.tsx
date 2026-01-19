@@ -1,8 +1,7 @@
 
 import { Paginator } from 'primereact/paginator';
 import { Button } from 'primereact/button';
-// import { Dropdown } from 'primereact/dropdown';
-import type { PaginatorPageChangeEvent } from 'primereact/paginator';
+import type { PaginatorPageChangeEvent, PaginatorFirstPageLinkOptions, PaginatorPrevPageLinkOptions, PaginatorNextPageLinkOptions, PaginatorLastPageLinkOptions } from 'primereact/paginator';
 
 type TablePaginatorProps = {
   first: number;
@@ -16,7 +15,6 @@ export function TablePaginator({
   first,
   rows,
   totalRecords,
-  // rowsPerPageOptions = [12, 24, 48],
   onPageChange
 }: TablePaginatorProps) {
   const leftContent = (
@@ -25,30 +23,18 @@ export function TablePaginator({
     </span>
   );
 
-  // const rightContent = (
-  //   <Dropdown
-  //     value={rows}
-  //     options={[
-  //       ...rowsPerPageOptions.map(v => ({ label: v, value: v })),
-  //     ]}
-  //     onChange={(e) =>
-  //       onPageChange({ first: 0, rows: e.value, page: 0, pageCount: 0 })
-  //     }
-  //   />
-  // );
-
   const template = {
     layout: 'FirstPageLink PrevPageLink PageLinks  NextPageLink LastPageLink',
-    FirstPageLink: (o: any) => (
+    FirstPageLink: (o: PaginatorFirstPageLinkOptions) => (
       <Button text disabled={o.disabled} onClick={o.onClick} label="First" />
     ),
-    PrevPageLink: (o: any) => (
+    PrevPageLink: (o: PaginatorPrevPageLinkOptions) => (
       <Button text disabled={o.disabled} onClick={o.onClick} label="Prev" />
     ),
-    LastPageLink: (o: any) => (
+    LastPageLink: (o: PaginatorLastPageLinkOptions) => (
       <Button text disabled={o.disabled} onClick={o.onClick} label="Last" />
     ),
-    NextPageLink: (o: any) => (
+    NextPageLink: (o: PaginatorNextPageLinkOptions) => (
       <Button text disabled={o.disabled} onClick={o.onClick} label="Next" />
     )
   };

@@ -1,36 +1,65 @@
-import {  useEffect, useState } from "react";
-import type Artworks from "../types/artworks";
-import { getArtworks } from "../lib/api";
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import type { PaginatorPageChangeEvent } from 'primereact/paginator';
+import { useRowSelection } from './useRowSelection';
+import { getArtworks } from '../lib/api';
+import type Artworks from '../types/artworks';
 
-export type ID = Artworks['id']; 
-export type SelectionMode = 'NONE' |'FIRST_N' | 'ALL';
+interface ApiResponse {
+  data: Artworks[];
+  pagination: {
+    total: number;
+    limit: number;
+    offset: number;
+    total_pages: number;
+    current_page: number;
+  };
+}
 
-export function useCollection() {
+export const useCollection = () => {
   const [items, setItems] = useState<Artworks[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [totalRecords, setTotalRecords] = useState(0);
+  const [loading, setLoading] = useState(false);
   const [first, setFirst] = useState(0);
-  const [rows, setRows] = useState(12);
+  const [rows] = useState(12);
+  const [totalRecords, setTotalRecords] = useState(0);
 
-  useEffect(() => {
-    fetchArtworks();
-  }, [first, rows]);
+  const {
+    handleSelectionChange,
+    handleSelectAllChange,
+    selectRows,
+    clearSelection,
+    selectedCount,
+    bulkSelectCount,
+    getCurrentPageSelection,
+    isInBulkMode,
+    isAllCurrentPageSelected,
+  } = useRowSelection();
 
-  async function fetchArtworks() {
+  const currentPage = Math.floor(first / rows) + 1;
+
+  const currentPageSelection = useMemo(() => {
+    return getCurrentPageSelection(items, first);
+  }, [getCurrentPageSelection, items, first]);
+
+  const fetchData = useCallback(async (page: number) => {
     setLoading(true);
     try {
-      const page = Math.floor(first / rows) + 1;
-      const res = await getArtworks(page, rows);
-      setItems(res.data);
-      setTotalRecords(res.pagination.total);
+      const data: ApiResponse = await getArtworks(page, rows);
+
+      setItems(data.data);
+      setTotalRecords(data.pagination.total);
+    } catch (error) {
+      console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
     }
-  }
+  }, [rows]);
 
-    const onPageChange = (e: { first: number; rows: number }) => {
-    setFirst(e.first);
-    setRows(e.rows);
+  useEffect(() => {
+    fetchData(currentPage);
+  }, [currentPage, fetchData]);
+
+  const onPageChange = (event: PaginatorPageChangeEvent) => {
+    setFirst(event.first);
   };
 
   return {
@@ -40,6 +69,14 @@ export function useCollection() {
     rows,
     totalRecords,
     onPageChange,
+    selectedCount,
+    selectRows,
+    clearSelection,
+    handleSelectionChange,
+    handleSelectAllChange,
+    bulkSelectCount,
+    currentPageSelection,
+    isInBulkMode,
+    isAllCurrentPageSelected,
   };
-}
-
+};

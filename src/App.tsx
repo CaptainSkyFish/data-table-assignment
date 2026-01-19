@@ -1,9 +1,9 @@
 import './App.css';
-import { CollectionTableSkeleton } from './components/CollectionTableSkeleton';
+import { CollectionTableSkeleton } from './components/CollectionTableSkeleton.tsx';
 import { TablePaginator } from './components/TablePaginator';
-import { useCollection } from './hooks/useCollection';
-import { CollectionTable } from './components/CollectionTable';
-import { useRowSelection } from './hooks/useRowSelection';
+import { useCollection } from './hooks/useCollection.ts';
+import { CollectionTable } from './components/CollectionTable.tsx';
+import type Artworks from './types/artworks';
 
 function App() {
   const {
@@ -13,42 +13,59 @@ function App() {
     rows,
     totalRecords,
     onPageChange,
+    selectedCount,
+    selectRows,
+    clearSelection,
+    handleSelectionChange,
+    handleSelectAllChange,
+    bulkSelectCount,
+    currentPageSelection,
+    isInBulkMode,
+    isAllCurrentPageSelected,
   } = useCollection();
 
-  const { isRowSelected, setSelectFirstN } = useRowSelection();
+  const handleSelectRows = (count: number) => {
+    selectRows(count);
+  };
+
+  const handleSelectionChangeWrapper = (selection: Artworks[], firstOffset: number) => {
+    handleSelectionChange(selection, items, firstOffset);
+  };
+
+  const handleSelectAllChangeWrapper = (isAllSelected: boolean) => {
+    handleSelectAllChange(isAllSelected, items);
+  };
 
   return (
     <div className="card">
-      <div className="flex justify-between mb-1 p-1">
-        <h3>
-          Selected {} of {totalRecords}
-        </h3>
+      <div className=' mb-1 p-1' >
+        <h3>Selected {selectedCount} of {totalRecords} </h3>
       </div>
-
-      {loading ? (
-        <CollectionTableSkeleton rows={rows} />
-      ) : (
+      {loading ?
+        <CollectionTableSkeleton rows={rows} /> :
         <CollectionTable
           items={items}
           loading={loading}
-          isRowSelected={isRowSelected}
-          setSelectFirstN={setSelectFirstN}
-          // toggleRow={toggleRow}
-          // selectRows={selectRows}
-          // clearSelection={clearSelection}
+          selectRows={handleSelectRows}
+          clearSelection={clearSelection}
+          onSelectionChange={handleSelectionChangeWrapper}
+          onSelectAllChange={handleSelectAllChangeWrapper}
+          selectedCount={selectedCount}
+          bulkSelectCount={bulkSelectCount}
+          currentPageSelection={currentPageSelection}
+          isInBulkMode={isInBulkMode}
+          first={first}
+          isAllCurrentPageSelected={isAllCurrentPageSelected(items, first)}
         />
-      )}
-
+      }
       <TablePaginator
         first={first}
         rows={rows}
         totalRecords={totalRecords}
         onPageChange={onPageChange}
       />
-    </div>
+    </div >
   );
 }
-
-
 
 export default App
