@@ -38,14 +38,21 @@ export function TablePaginator({
   // );
 
   const template = {
-    layout: 'PrevPageLink PageLinks NextPageLink',
+    layout: 'FirstPageLink PrevPageLink PageLinks  NextPageLink LastPageLink',
+    FirstPageLink: (o: any) => (
+      <Button text disabled={o.disabled} onClick={o.onClick} label="First" />
+    ),
     PrevPageLink: (o: any) => (
       <Button text disabled={o.disabled} onClick={o.onClick} label="Prev" />
+    ),
+    LastPageLink: (o: any) => (
+      <Button text disabled={o.disabled} onClick={o.onClick} label="Last" />
     ),
     NextPageLink: (o: any) => (
       <Button text disabled={o.disabled} onClick={o.onClick} label="Next" />
     )
   };
+
 
   return (
     <Paginator
@@ -54,6 +61,7 @@ export function TablePaginator({
       totalRecords={totalRecords}
       onPageChange={onPageChange}
       template={template}
+      pageLinkSize={4}
       leftContent={leftContent}
     // rightContent={rightContent}
     />

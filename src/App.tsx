@@ -1,61 +1,54 @@
 import './App.css';
-import { InputSwitch } from 'primereact/inputswitch';
-import { CollectionTableSkeleton } from './components/CollectionTableSkeleton.tsx';
+import { CollectionTableSkeleton } from './components/CollectionTableSkeleton';
 import { TablePaginator } from './components/TablePaginator';
-import { useCollection } from './hooks/useCollection.ts';
-import { CollectionTable } from './components/CollectionTable.tsx';
+import { useCollection } from './hooks/useCollection';
+import { CollectionTable } from './components/CollectionTable';
+import { useRowSelection } from './hooks/useRowSelection';
 
 function App() {
   const {
     items,
-    selectedItems,
     loading,
-    rowClick,
-    setRowClick,
-    rows,
     first,
+    rows,
     totalRecords,
-    setSelectedItems,
     onPageChange,
-    clearSelection,
-    selectRows
   } = useCollection();
 
+  const { isRowSelected, setSelectFirstN } = useRowSelection();
 
   return (
     <div className="card">
-      <div className='flex justify-between mb-1 p-1' >
-        <h3>Selected {selectedItems.length} of {rows} </h3>
-
-        <div className="flex justify-end items-center mb-4 gap-2" style={{ marginBottom: '1rem' }}>
-          <InputSwitch
-            inputId="input-rowclick"
-            checked={rowClick}
-            onChange={(e) => setRowClick(e.value)}
-          />
-          <label htmlFor="input-rowclick">Row Click Selection</label>
-        </div>
+      <div className="flex justify-between mb-1 p-1">
+        <h3>
+          Selected {} of {totalRecords}
+        </h3>
       </div>
-      {loading ?
-        <CollectionTableSkeleton rows={rows} /> :
+
+      {loading ? (
+        <CollectionTableSkeleton rows={rows} />
+      ) : (
         <CollectionTable
           items={items}
-          selectedItems={selectedItems}
-          setSelectedItems={setSelectedItems}
           loading={loading}
-          rowClick={rowClick}
-          selectRows={selectRows}
-          clearSelection={clearSelection}
+          isRowSelected={isRowSelected}
+          setSelectFirstN={setSelectFirstN}
+          // toggleRow={toggleRow}
+          // selectRows={selectRows}
+          // clearSelection={clearSelection}
         />
-      }
+      )}
+
       <TablePaginator
         first={first}
         rows={rows}
         totalRecords={totalRecords}
         onPageChange={onPageChange}
       />
-    </div >
+    </div>
   );
 }
+
+
 
 export default App

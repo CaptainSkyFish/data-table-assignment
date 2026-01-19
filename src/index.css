@@ -1,11 +1,13 @@
 @import "tailwindcss";
+@import url('https://rsms.me/inter/inter.css');
 
-/* html { */
-/*   font-size: 14px; */
-/* } */
-/**/
+:root {
+  font-family: Inter, system-ui, sans-serif;
+  font-size: clamp(14px, 1.2vw, 16px);
+}
+
 body {
-  font-family: var(--font-family);
+  font-family: inherit;
   font-weight: normal;
   background: var(--surface-ground);
   color: var(--text-color);
@@ -19,4 +21,16 @@ body {
   padding: 2rem;
   border-radius: 10px;
   margin-bottom: 1rem;
+}
+
+h1 {
+  font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+}
+
+h2 {
+  font-size: clamp(1.3rem, 2vw, 1.8rem);
+}
+
+h3 {
+  font-size: clamp(1.1rem, 1.6vw, 1.4rem);
 }

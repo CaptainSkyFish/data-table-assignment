@@ -10,12 +10,12 @@ export const CollectionTableSkeleton = ({ rows = 12 }: { rows?: number }) => {
   return (
     <DataTable value={items} className="p-datatable-striped">
       <Column header="" body={cell} style={{ width: '5%' }} />
-      <Column header="Title" body={cell} style={{ width: '25%' }} />
-      <Column header="Place of Origin" body={cell} style={{ width: '10%' }} />
-      <Column header="Artist" body={cell} style={{ width: '25%' }} />
-      <Column header="Inscriptions" body={cell} style={{ width: '25%' }} />
-      <Column header="Start Date" body={cell} style={{ width: '5%' }} />
-      <Column header="End Date" body={cell} style={{ width: '5%' }} />
+      <Column header="TITLE" body={cell} style={{ width: '25%' }} />
+      <Column header="PLACE OF ORIGIN" body={cell} style={{ width: '10%' }} />
+      <Column header="ARTIST" body={cell} style={{ width: '25%' }} />
+      <Column header="INSCRIPTIONS" body={cell} style={{ width: '25%' }} />
+      <Column header="START DATE" body={cell} style={{ width: '5%' }} />
+      <Column header="END DATE" body={cell} style={{ width: '5%' }} />
     </DataTable>
   );
 };

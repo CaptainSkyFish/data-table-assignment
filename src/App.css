@@ -5,6 +5,10 @@
   max-width: 0;
 }
 
+.title-cell {
+  font-weight: 600;
+}
+
 /* hack to render the overlay toggle button on right side of the checkbox */
 /* this avoids throwing away all the functionalities that come pre-built with the PrimeReact DataTable  */
 .p-selection-column .p-column-header-content {
