@@ -1,6 +1,17 @@
+<div align="center">
+
 # Collection Table
 
 A modular, stress-tested, type-safe data table with advanced selection UX, built using **Vite + React + TypeScript + PrimeReact**.
+
+</div>
+
+---
+
+## Demo
+
+Video demo: [data-table-demo.mp4](./public/data-table-demo.mp4)
+
 
 ---
 
@@ -28,7 +39,7 @@ A modular, stress-tested, type-safe data table with advanced selection UX, built
 ---
 
 ## Folder Structure
-
+```
 src/
 ├── App.tsx
 ├── components/
@@ -46,7 +57,7 @@ src/
 ├── types/
 │   └── artworks.ts
 └── App.css
-
+```
 ---
 
 ## Data Flow
