@@ -23,22 +23,30 @@ export const useCollection = () => {
   const [totalRecords, setTotalRecords] = useState(0);
 
   const {
-    handleSelectionChange,
-    handleSelectAllChange,
-    selectRows,
-    clearSelection,
     selectedCount,
-    bulkSelectCount,
-    getCurrentPageSelection,
     isInBulkMode,
-    isAllCurrentPageSelected,
+    clearSelection,
+    selectRows,
+    handleSelectionChange,
+    handleAllRowsSelect,
+    handleAllRowsUnselect,
+    isRowSelected,
   } = useRowSelection();
 
-  const currentPage = Math.floor(first / rows) + 1;
-
   const currentPageSelection = useMemo(() => {
-    return getCurrentPageSelection(items, first);
-  }, [getCurrentPageSelection, items, first]);
+    return items.filter((item, index) => isRowSelected(item, first + index));
+  }, [items, first, isRowSelected]);
+
+  const selectAllState = useMemo(() => {
+    if (items.length === 0) return false;
+    const allSelected = items.every((item, index) => isRowSelected(item, first + index));
+    const noneSelected = items.every((item, index) => !isRowSelected(item, first + index));
+    if (allSelected) return true;
+    if (noneSelected) return false;
+    return undefined;
+  }, [items, first, isRowSelected]);
+
+  const currentPage = Math.floor(first / rows) + 1;
 
   const fetchData = useCallback(async (page: number) => {
     setLoading(true);
@@ -70,13 +78,13 @@ export const useCollection = () => {
     totalRecords,
     onPageChange,
     selectedCount,
-    selectRows,
-    clearSelection,
-    handleSelectionChange,
-    handleSelectAllChange,
-    bulkSelectCount,
-    currentPageSelection,
     isInBulkMode,
-    isAllCurrentPageSelected,
+    clearSelection,
+    selectRows,
+    handleSelectionChange,
+    handleAllRowsSelect,
+    handleAllRowsUnselect,
+    currentPageSelection,
+    selectAllState,
   };
 };

@@ -3,7 +3,6 @@ import { CollectionTableSkeleton } from './components/CollectionTableSkeleton.ts
 import { TablePaginator } from './components/TablePaginator';
 import { useCollection } from './hooks/useCollection.ts';
 import { CollectionTable } from './components/CollectionTable.tsx';
-import type Artworks from './types/artworks';
 
 function App() {
   const {
@@ -14,27 +13,15 @@ function App() {
     totalRecords,
     onPageChange,
     selectedCount,
-    selectRows,
-    clearSelection,
-    handleSelectionChange,
-    handleSelectAllChange,
-    bulkSelectCount,
-    currentPageSelection,
     isInBulkMode,
-    isAllCurrentPageSelected,
+    clearSelection,
+    selectRows,
+    handleSelectionChange,
+    handleAllRowsSelect,
+    handleAllRowsUnselect,
+    currentPageSelection,
+    selectAllState,
   } = useCollection();
-
-  const handleSelectRows = (count: number) => {
-    selectRows(count);
-  };
-
-  const handleSelectionChangeWrapper = (selection: Artworks[], firstOffset: number) => {
-    handleSelectionChange(selection, items, firstOffset);
-  };
-
-  const handleSelectAllChangeWrapper = (isAllSelected: boolean) => {
-    handleSelectAllChange(isAllSelected, items);
-  };
 
   return (
     <div className="card">
@@ -46,16 +33,17 @@ function App() {
         <CollectionTable
           items={items}
           loading={loading}
-          selectRows={handleSelectRows}
-          clearSelection={clearSelection}
-          onSelectionChange={handleSelectionChangeWrapper}
-          onSelectAllChange={handleSelectAllChangeWrapper}
+          totalRecords={totalRecords}
           selectedCount={selectedCount}
-          bulkSelectCount={bulkSelectCount}
-          currentPageSelection={currentPageSelection}
           isInBulkMode={isInBulkMode}
+          selectRows={selectRows}
+          clearSelection={clearSelection}
+          handleSelectionChange={handleSelectionChange}
+          handleAllRowsSelect={handleAllRowsSelect}
+          handleAllRowsUnselect={handleAllRowsUnselect}
+          currentPageSelection={currentPageSelection}
+          selectAllState={selectAllState}
           first={first}
-          isAllCurrentPageSelected={isAllCurrentPageSelected(items, first)}
         />
       }
       <TablePaginator

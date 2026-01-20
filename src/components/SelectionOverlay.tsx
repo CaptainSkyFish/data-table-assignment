@@ -8,9 +8,10 @@ interface SelectionOverlayProps {
   clearSelection: () => void;
   selectedCount?: number;
   isInBulkMode?: boolean;
+  totalRecords: number;
 }
 
-export const SelectionOverlay = ({ selectRows, clearSelection, selectedCount, isInBulkMode }: SelectionOverlayProps) => {
+export const SelectionOverlay = ({ selectRows, clearSelection, selectedCount, isInBulkMode, totalRecords }: SelectionOverlayProps) => {
   const [selectCount, setSelectCount] = useState<number | null>(null);
   const overlayRef = useRef<OverlayPanel>(null);
 
@@ -20,7 +21,8 @@ export const SelectionOverlay = ({ selectRows, clearSelection, selectedCount, is
 
   const handleSubmit = () => {
     if (selectCount && selectCount > 0) {
-      selectRows(selectCount);
+      const clampedCount = Math.min(selectCount, totalRecords);
+      selectRows(clampedCount);
       overlayRef.current?.hide();
       setSelectCount(null);
     }
