@@ -3,8 +3,10 @@ import { CollectionTableSkeleton } from './components/CollectionTableSkeleton.ts
 import { TablePaginator } from './components/TablePaginator';
 import { useCollection } from './hooks/useCollection.ts';
 import { CollectionTable } from './components/CollectionTable.tsx';
+import { SelectionProvider } from './context/SelectionContext';
+import { useSelection } from './hooks/useSelection';
 
-function App() {
+function AppContent() {
   const {
     items,
     loading,
@@ -12,21 +14,14 @@ function App() {
     rows,
     totalRecords,
     onPageChange,
-    selectedCount,
-    isInBulkMode,
-    clearSelection,
-    selectRows,
-    handleSelectionChange,
-    handleAllRowsSelect,
-    handleAllRowsUnselect,
-    currentPageSelection,
-    selectAllState,
   } = useCollection();
+
+  const { count } = useSelection();
 
   return (
     <div className="card">
       <div className=' mb-1 p-1' >
-        <h3>Selected {selectedCount} of {totalRecords} </h3>
+        <h3>Selected {count} of {totalRecords} </h3>
       </div>
       {loading ?
         <CollectionTableSkeleton rows={rows} /> :
@@ -34,15 +29,6 @@ function App() {
           items={items}
           loading={loading}
           totalRecords={totalRecords}
-          selectedCount={selectedCount}
-          isInBulkMode={isInBulkMode}
-          selectRows={selectRows}
-          clearSelection={clearSelection}
-          handleSelectionChange={handleSelectionChange}
-          handleAllRowsSelect={handleAllRowsSelect}
-          handleAllRowsUnselect={handleAllRowsUnselect}
-          currentPageSelection={currentPageSelection}
-          selectAllState={selectAllState}
           first={first}
         />
       }
@@ -52,7 +38,15 @@ function App() {
         totalRecords={totalRecords}
         onPageChange={onPageChange}
       />
-    </div >
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <SelectionProvider>
+      <AppContent />
+    </SelectionProvider>
   );
 }
 

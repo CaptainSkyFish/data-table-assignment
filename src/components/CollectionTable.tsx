@@ -3,20 +3,12 @@ import type { DataTableSelectAllChangeEvent } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { SelectionOverlay } from './SelectionOverlay';
 import type Artworks from '../types/artworks';
+import { useSelection } from '../hooks/useSelection';
 
 interface CollectionTableProps {
   items: Artworks[];
   loading: boolean;
   totalRecords: number;
-  selectedCount: number;
-  isInBulkMode: boolean;
-  selectRows: (count: number) => void;
-  clearSelection: () => void;
-  handleSelectionChange: (currentPageItems: Artworks[], firstOffset: number, newSelection: Artworks[]) => void;
-  handleAllRowsSelect: (currentPageItems: Artworks[], firstOffset: number) => void;
-  handleAllRowsUnselect: (currentPageItems: Artworks[], firstOffset: number) => void;
-  currentPageSelection: Artworks[];
-  selectAllState: boolean | undefined;
   first: number;
 }
 
@@ -24,22 +16,24 @@ export const CollectionTable = ({
   items,
   loading,
   totalRecords,
-  selectedCount,
-  isInBulkMode,
-  selectRows,
-  clearSelection,
-  handleSelectionChange,
-  handleAllRowsSelect,
-  handleAllRowsUnselect,
-  currentPageSelection,
-  selectAllState,
   first,
 }: CollectionTableProps) => {
+  const { 
+    getSelectedRows, 
+    getSelectAllState, 
+    onToggle, 
+    selectAll, 
+    unselectAll,
+  } = useSelection();
+
+  const currentPageSelection = getSelectedRows(items, first);
+  const selectAllState = getSelectAllState(items, first);
+
   const handleSelectAllChange = (e: DataTableSelectAllChangeEvent) => {
     if (e.checked) {
-      handleAllRowsSelect(items, first);
+      selectAll(items, first);
     } else {
-      handleAllRowsUnselect(items, first);
+      unselectAll(items, first);
     }
   };
 
@@ -49,7 +43,7 @@ export const CollectionTable = ({
       dataKey="id"
       loading={loading}
       selection={currentPageSelection}
-      onSelectionChange={(e) => handleSelectionChange(items, first, e.value || [])}
+      onSelectionChange={(e) => onToggle(items, first, e.value || [])}
       onSelectAllChange={handleSelectAllChange}
       selectAll={selectAllState}
       tableStyle={{ minWidth: '50rem' }}
@@ -59,13 +53,7 @@ export const CollectionTable = ({
       <Column
         selectionMode="multiple"
         header={
-          <SelectionOverlay
-            selectRows={selectRows}
-            clearSelection={clearSelection}
-            selectedCount={selectedCount}
-            isInBulkMode={isInBulkMode}
-            totalRecords={totalRecords}
-          />
+          <SelectionOverlay totalRecords={totalRecords} />
         }
         headerStyle={{ width: '5%' }}
       />

@@ -1,6 +1,5 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { PaginatorPageChangeEvent } from 'primereact/paginator';
-import { useRowSelection } from './useRowSelection';
 import { getArtworks } from '../lib/api';
 import type Artworks from '../types/artworks';
 
@@ -21,30 +20,6 @@ export const useCollection = () => {
   const [first, setFirst] = useState(0);
   const [rows] = useState(12);
   const [totalRecords, setTotalRecords] = useState(0);
-
-  const {
-    selectedCount,
-    isInBulkMode,
-    clearSelection,
-    selectRows,
-    handleSelectionChange,
-    handleAllRowsSelect,
-    handleAllRowsUnselect,
-    isRowSelected,
-  } = useRowSelection();
-
-  const currentPageSelection = useMemo(() => {
-    return items.filter((item, index) => isRowSelected(item, first + index));
-  }, [items, first, isRowSelected]);
-
-  const selectAllState = useMemo(() => {
-    if (items.length === 0) return false;
-    const allSelected = items.every((item, index) => isRowSelected(item, first + index));
-    const noneSelected = items.every((item, index) => !isRowSelected(item, first + index));
-    if (allSelected) return true;
-    if (noneSelected) return false;
-    return undefined;
-  }, [items, first, isRowSelected]);
 
   const currentPage = Math.floor(first / rows) + 1;
 
@@ -77,14 +52,5 @@ export const useCollection = () => {
     rows,
     totalRecords,
     onPageChange,
-    selectedCount,
-    isInBulkMode,
-    clearSelection,
-    selectRows,
-    handleSelectionChange,
-    handleAllRowsSelect,
-    handleAllRowsUnselect,
-    currentPageSelection,
-    selectAllState,
   };
 };

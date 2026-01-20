@@ -2,17 +2,15 @@ import { useState, useRef } from 'react';
 import { Button } from 'primereact/button';
 import { OverlayPanel } from 'primereact/overlaypanel';
 import { InputNumber } from 'primereact/inputnumber';
+import { useSelection } from '../hooks/useSelection';
 
 interface SelectionOverlayProps {
-  selectRows: (count: number) => void;
-  clearSelection: () => void;
-  selectedCount?: number;
-  isInBulkMode?: boolean;
   totalRecords: number;
 }
 
-export const SelectionOverlay = ({ selectRows, clearSelection, selectedCount, isInBulkMode, totalRecords }: SelectionOverlayProps) => {
-  const [selectCount, setSelectCount] = useState<number | null>(null);
+export const SelectionOverlay = ({ totalRecords }: SelectionOverlayProps) => {
+  const { count, isBulkMode, selectRows, clearSelection } = useSelection();
+  const [bulkSelectCount, setBulkSelectCount] = useState<number | null>(null);
   const overlayRef = useRef<OverlayPanel>(null);
 
   const handleToggle = (e: React.MouseEvent) => {
@@ -20,11 +18,11 @@ export const SelectionOverlay = ({ selectRows, clearSelection, selectedCount, is
   };
 
   const handleSubmit = () => {
-    if (selectCount && selectCount > 0) {
-      const clampedCount = Math.min(selectCount, totalRecords);
-      selectRows(clampedCount);
+    if (bulkSelectCount && bulkSelectCount > 0) {
+      const rowsToSelect = Math.min(bulkSelectCount, totalRecords);
+      selectRows(rowsToSelect);
       overlayRef.current?.hide();
-      setSelectCount(null);
+      setBulkSelectCount(null);
     }
   };
 
@@ -38,7 +36,7 @@ export const SelectionOverlay = ({ selectRows, clearSelection, selectedCount, is
     <OverlayPanel ref={overlayRef}>
       <div className="p-1 min-w-2xs">
         <h3 className="font-semibold">Select Rows</h3>
-        {isInBulkMode && (
+        {isBulkMode && (
           <p className="text-sm text-gray-600 mb-2">
             Currently in bulk selection mode
           </p>
@@ -48,8 +46,9 @@ export const SelectionOverlay = ({ selectRows, clearSelection, selectedCount, is
             Enter number of rows to select across all pages:
           </label>
           <InputNumber
-            value={selectCount}
-            onValueChange={(e) => setSelectCount(e.value ?? null)}
+            autoFocus
+            value={bulkSelectCount}
+            onChange={(e) => setBulkSelectCount(e.value ?? null)}
             placeholder="Enter count"
             min={1}
           /></div>
@@ -62,13 +61,14 @@ export const SelectionOverlay = ({ selectRows, clearSelection, selectedCount, is
             }}
             severity="secondary"
             size="small"
-            disabled={selectedCount === 0}
+            disabled={count === 0}
           />
           <Button
+            autoFocus
             label="Select"
             onClick={handleSubmit}
             size="small"
-            disabled={selectCount === null || selectCount === undefined || selectCount === 0}
+            disabled={bulkSelectCount === null || bulkSelectCount === undefined || bulkSelectCount === 0}
           />
         </div>
       </div>
