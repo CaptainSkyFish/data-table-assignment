@@ -64,7 +64,6 @@ export const SelectionOverlay = ({ totalRecords }: SelectionOverlayProps) => {
             disabled={count === 0}
           />
           <Button
-            autoFocus
             label="Select"
             onClick={handleSubmit}
             size="small"
